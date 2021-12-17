@@ -46,9 +46,14 @@ runs:
       shell: bash
       if: ${{ inputs.body-markdown-file-path  != '' }}
       run: |
-        echo "${{fromJson(steps.json_release_dataset.outputs.body)}}"
-        echo ${{ steps.json_release_dataset.outputs.body }}
+        #echo "${{fromJson(steps.json_release_dataset.outputs.body)}}"
+        #echo ${{ steps.json_release_dataset.outputs.body }}
 
+        echo "export data to markdown file"
+        echo "${{ steps.json_release_dataset.outputs.body }}"
+        {
+          echo '${{ steps.json_release_dataset.outputs.body }}'
+        } >> ${{ inputs.body-markdown-file-path }}
 
     #- name: Export Markdown file
     #  shell: bash
