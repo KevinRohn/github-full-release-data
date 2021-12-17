@@ -49,7 +49,7 @@ runs:
       id: release_data
       shell: bash
       run: |
-        echo "${{fromJson(steps.json_release_dataset.outputs.data).version}}"
+        echo "${{fromJson(steps.json_release_dataset.outputs.data).body}}"
         #${{ steps.json_release_dataset.outputs.data }}
 
 
