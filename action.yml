@@ -32,10 +32,12 @@ runs:
       run: |
         echo "::group::Fetch data"
 
-        log_token_toggle=$(echo -n ${{ github.token }} | sha256sum | head -c 64)
+        log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
 
+        sleep 2
         token=${{ inputs.token }}
         gh_api_url="https://api.github.com/repos/${{ inputs.repository }}"
 
@@ -47,7 +49,7 @@ runs:
         body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
 
         echo "::$log_token_toggle::"
-
+        echo "::echo::off"
         echo "::set-output name=body::$body_packed_in_json"
         echo "::endgroup::"
 
