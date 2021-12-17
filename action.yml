@@ -16,11 +16,6 @@ inputs:
   body-markdown-file-path:
     description: "Output path for release body content as Markdown file"
     required: false
-  #asset-file:
-  #  description: 'Download asset file from path - allowed inputs: `all`, <filename> '
-  #  required: false
-  #asset-file-path:
-  #  description: ''
 
 #outputs:
 #  body:
@@ -49,8 +44,8 @@ runs:
       id: release_data
       shell: bash
       run: |
-        echo "${{fromJson(steps.json_release_dataset.outputs.data)}}"
-        #${{ steps.json_release_dataset.outputs.data }}
+        #echo "${{fromJson(steps.json_release_dataset.outputs.data)}}"
+        echo ${{ steps.json_release_dataset.outputs.data }}
 
 
     #- name: Export Markdown file
