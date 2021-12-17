@@ -30,8 +30,10 @@ runs:
       shell: bash
       run: |
         echo "::group::Get Release Data"
-        token=${{ inputs.token }}
+        
+        echo "::echo::off"
 
+        token=${{ inputs.token }}
         gh_api_url="https://api.github.com/repos/${{ inputs.repository }}"
 
         release_json_data=$(curl ${token:+"-H"} ${token:+"Authorization: token ${token}"} \
@@ -40,8 +42,8 @@ runs:
         # See Workaround of multiline outputs for set-output https://github.community/t/set-output-truncates-multiline-strings/16852/9
         body=$(jq -r '.body' <<< "$release_json_data")
         body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
-        
 
+        echo "::echo::on"
         echo "::set-output name=body::$body_packed_in_json"
 
         echo "::endgroup::"
