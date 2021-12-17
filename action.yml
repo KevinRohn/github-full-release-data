@@ -43,7 +43,10 @@ runs:
         body=$(jq -r '.body' <<< "$release_json_data")
 
         #body=$(echo "$release_json_data" | jq -r ".body")
+        echo "start body output"
         echo "$body"
+        echo "end body output"
+
         echo "::set-output name=body::$body"
 
     - name: Export Markdown file
