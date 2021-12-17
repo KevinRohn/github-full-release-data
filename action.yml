@@ -52,7 +52,6 @@ runs:
         body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
 
         echo "::$log_token_toggle::"
-        echo "::echo::on"
         echo "::set-output name=body::$body_packed_in_json"
 
         echo "::endgroup::"
