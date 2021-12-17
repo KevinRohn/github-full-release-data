@@ -28,9 +28,14 @@ runs:
     - name: Get release data
       id: json_release_dataset
       shell: bash
-      
-      run: |       
+
+      run: |
         echo "::group::Fetch data"
+
+        log_token_toggle=$(echo -n ${{ github.token }} | sha256sum | head -c 64)
+        echo "::add-mask::$log_token_toggle"
+        echo "::stop-commands::$log_token_toggle"
+
         token=${{ inputs.token }}
         gh_api_url="https://api.github.com/repos/${{ inputs.repository }}"
 
