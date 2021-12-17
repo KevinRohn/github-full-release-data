@@ -21,7 +21,7 @@ outputs:
   body:
     description: >
       The `body` output from release. It's an multiline output, which is packed in a JSON object.
-      The output can be used with the fromJSON function `${{ fromJSON(steps.<id>.outputs.body) }}`.
+      The output can be used with the function `(steps.<id>.outputs.body)`.
 
       This workaround is applied because of the following multiline output problem.
       [set-output truncates multiline strings](https://github.community/t/set-output-truncates-multiline-strings/16852/9)
