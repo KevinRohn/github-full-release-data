@@ -30,6 +30,7 @@ runs:
       shell: bash
       run: |
         token=${{ inputs.token }}
+
         gh_api_url="https://api.github.com/repos/${{ inputs.repository }}"
 
         release_json_data=$(curl ${token:+"-H"} ${token:+"Authorization: token ${token}"} \
@@ -37,15 +38,16 @@ runs:
 
         #body=$(jq -r '.body' <<< "$release_json_data")
         #body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
+        
+        packed_data=$(printf '%s' "$release_json_data" | jq --raw-input --slurp '.')
+        echo "::set-output name=data::$packed_data"
 
-        echo "::set-output name=data::$release_json_data"
-
-    #- name: Extract content from JSON dataset
-    #  id: release_data
-    #  shell: bash
-    #  run: |
-    #    #echo "${{fromJson(steps.json_release_dataset.outputs.data)}}"
-    #    echo ${{ steps.json_release_dataset.outputs.data }}
+    - name: Extract content from JSON dataset
+      id: release_data
+      shell: bash
+      run: |
+        #echo "${{fromJson(steps.json_release_dataset.outputs.data)}}"
+        echo ${{ steps.json_release_dataset.outputs.data }}
 
 
     #- name: Export Markdown file
