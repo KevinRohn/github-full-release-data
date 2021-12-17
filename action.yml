@@ -31,7 +31,7 @@ runs:
       run: |
         echo "::group::Get Release Data"
         
-        echo '::set-output name=action_echo::disabled'
+        echo "::set-output name=action_echo::disabled"
         echo "::echo::off"
 
         token=${{ inputs.token }}
@@ -44,8 +44,6 @@ runs:
         body=$(jq -r '.body' <<< "$release_json_data")
         body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
 
-        echo "::echo::on"
-        echo '::set-output name=action_echo::enabled'
         echo "::set-output name=body::$body_packed_in_json"
 
         echo "::endgroup::"
