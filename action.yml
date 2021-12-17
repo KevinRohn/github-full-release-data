@@ -157,5 +157,5 @@ runs:
         } >> ${{ inputs.body-markdown-file-path }}
         echo "::$log_token_toggle::"
         
-        echo "::notice::Saved body content to markdown file '${{ inputs.body-markdown-file-path }}'"
+        echo "::notice title=Release Markdown file::Saved body content to markdown file '${{ inputs.body-markdown-file-path }}'"
         echo "::endgroup::"
