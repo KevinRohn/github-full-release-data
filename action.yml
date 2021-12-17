@@ -17,16 +17,21 @@ inputs:
     description: "Output path for release body content as Markdown file"
     required: false
 
-#outputs:
-#  body:
-#    description: "`body` output from release"
-#    value: ${{ steps.release_data.outputs.body }}
+outputs:
+  body:
+    description: >
+      The `body` output from release. It's an multiline output, which is packed in a JSON object.
+      The output can be used with the fromJSON function `${{ fromJSON(steps.<id>.outputs.body) }}`.
+
+      This workaround is applied because of the following multiline output problem.
+      [set-output truncates multiline strings](https://github.community/t/set-output-truncates-multiline-strings/16852/9)
+    value: ${{ steps.release_data.outputs.body }}
 
 runs:
   using: "composite"
   steps:
     - name: Get release data
-      id: json_release_dataset
+      id: release_data
       shell: bash
 
       run: |
@@ -44,7 +49,6 @@ runs:
         release_json_data=$(curl ${token:+"-H"} ${token:+"Authorization: token ${token}"} \
                     "$gh_api_url/releases/${{ inputs.version }}")
 
-        # See Workaround of multiline outputs for set-output https://github.community/t/set-output-truncates-multiline-strings/16852/9
         body=$(jq -r '.body' <<< "$release_json_data")
         body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
 
@@ -58,7 +62,8 @@ runs:
       shell: bash
       if: ${{ inputs.body-markdown-file-path  != '' }}
       run: |
-        echo "export data to markdown file"
         {
-          echo '${{ fromJSON(steps.json_release_dataset.outputs.body) }}'
+          echo '${{ fromJSON(steps.release_data.outputs.body) }}'
         } >> ${{ inputs.body-markdown-file-path }}
+
+        echo "::notice body content '${{ fromJSON(steps.release_data.outputs.body) }}' is saved to '${{ inputs.body-markdown-file-path }}'::Saved body content as markdown file"
