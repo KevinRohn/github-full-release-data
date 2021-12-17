@@ -40,12 +40,12 @@ runs:
 
         echo "::set-output name=data::$release_json_data"
 
-    - name: Extract content from JSON dataset
-      id: release_data
-      shell: bash
-      run: |
-        #echo "${{fromJson(steps.json_release_dataset.outputs.data)}}"
-        echo ${{ steps.json_release_dataset.outputs.data }}
+    #- name: Extract content from JSON dataset
+    #  id: release_data
+    #  shell: bash
+    #  run: |
+    #    #echo "${{fromJson(steps.json_release_dataset.outputs.data)}}"
+    #    echo ${{ steps.json_release_dataset.outputs.data }}
 
 
     #- name: Export Markdown file
