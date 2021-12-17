@@ -87,8 +87,6 @@ runs:
 
         echo "::group::Fetch data"
 
-        echo "::echo::off"
-
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
@@ -120,6 +118,8 @@ runs:
 
         echo "::$log_token_toggle::"
 
+        echo "::echo::off"
+
         echo "::set-output name=url::$url"
         echo "::set-output name=html_url::$html_url"
         echo "::set-output name=assets_url::$assets_url"
@@ -137,8 +137,6 @@ runs:
         echo "::set-output name=prerelease::$prerelease"
         echo "::set-output name=created_at::$created_at"
         echo "::set-output name=published_at::$published_at"
-
-        echo "::notice title=Release tag_name::${tag_name}"
 
         echo "::endgroup::"
 
@@ -160,6 +158,27 @@ runs:
         echo "::$log_token_toggle::"
         
         echo "::notice title=Release Markdown file::Saved body content to markdown file '${{ inputs.body-markdown-file-path }}'"
-        echo "::notice title=Release html_url::${{ steps.release_data.outputs.html_url }}"
+
 
         echo "::endgroup::"
+    
+    - name: Set output annotations
+      shell: bash
+      run: |
+        echo "::notice title=Release url::${{ steps.release_data.outputs.url }}"
+        echo "::notice title=Release html_url::${{ steps.release_data.outputs.html_url }}"
+        echo "::notice title=Release assets_url::${{ steps.release_data.outputs.assets_url }}"
+        echo "::notice title=Release upload_url::${{ steps.release_data.outputs.upload_url }}"
+        echo "::notice title=Release tarball_url::${{ steps.release_data.outputs.tarball_url }}"
+        echo "::notice title=Release zipball_url::${{ steps.release_data.outputs.zipball_url }}"
+        echo "::notice title=Release discussion_url::${{ steps.release_data.outputs.discussion_url }}"
+        echo "::notice title=Release id::${{ steps.release_data.outputs.id }}"
+        echo "::notice title=Release node_id::${{ steps.release_data.outputs.node_id }}"
+        echo "::notice title=Release tag_name::${{ steps.release_data.outputs.tag_name }}"
+        echo "::notice title=Release target_commitish::${{ steps.release_data.outputs.target_commitish }}"
+        echo "::notice title=Release name::${{ steps.release_data.outputs.name }}"
+        echo "::notice title=Release draft::${{ steps.release_data.outputs.draft }}"
+        echo "::notice title=Release prerelease::${{ steps.release_data.outputs.prerelease }}"
+        echo "::notice title=Release created_at::${{ steps.release_data.outputs.created_at }}"
+        echo "::notice title=Release published_at::${{ steps.release_data.outputs.published_at }}"
+        echo "::notice title=Release body::${{ fromJSON(steps.release_data.outputs.body) }}"
