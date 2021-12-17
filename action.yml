@@ -22,10 +22,10 @@ inputs:
   #asset-file-path:
   #  description: ''
 
-outputs:
-  body:
-    description: "`body` output from release"
-    value: ${{ steps.release_data.outputs.body }}
+#outputs:
+#  body:
+#    description: "`body` output from release"
+#    value: ${{ steps.release_data.outputs.body }}
 
 runs:
   using: "composite"
@@ -49,8 +49,8 @@ runs:
       id: release_data
       shell: bash
       run: |
-        #echo "${{ fromJson(steps.json_release_dataset.outputs.data).body }}"
-        ${{ steps.json_release_dataset.outputs.data }}
+        echo "${{fromJson(steps.json_release_dataset.outputs.data)}}"
+        #${{ steps.json_release_dataset.outputs.data }}
 
 
     #- name: Export Markdown file
