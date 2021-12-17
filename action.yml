@@ -1,0 +1,49 @@
+name: "Get full release data"
+description: "Get all data from Github release of a given repository"
+inputs:
+  repository:
+    description: "Repository `<org>/<repo>`"
+    required: false
+    default: ${{ github.repository }}
+  token:
+    description: "Token for the repository. e.g.: `secrets.GITHUB_TOKEN`"
+    required: false
+    default: ${{ github.token }}
+  version:
+    description: "Release version `latest` or `tags/<tag-name>`"
+    required: false
+    default: "latest"
+  body-markdown-file-path:
+    description: "Output path for release body content as Markdown file"
+    required: false
+  #asset-file:
+  #  description: 'Download asset file from path - allowed inputs: `all`, <filename> '
+  #  required: false
+  #asset-file-path:
+  #  description: ''
+
+outputs:
+  body:
+    description: "`body` output from release"
+    value: ${{ steps.release_data.outputs.body }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build API URL
+      id: release_data
+      run: |
+        token=${{ inputs.token }}
+        gh_api_url="https://api.github.com/repos/${{ inputs.repository }}"
+
+        release_json_data=$(curl ${token:+"-H"} ${token:+"Authorization: token ${token}"} \
+                    "$gh_api_url/releases/${{ inputs.version }}")
+
+        body=$(echo "$release_json_data" | jq -r ".body")
+
+        echo ::set-output name=body::"$body"
+
+    - name: Export Markdown file
+      if: ${{ inputs.body-markdown-file-path  != '' }}
+      run: |
+        cat ${{ steps.release_data.outputs.body }} > ${{ inputs.body-markdown-file-path }}
