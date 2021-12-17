@@ -138,8 +138,10 @@ runs:
         echo "::set-output name=created_at::$created_at"
         echo "::set-output name=published_at::$published_at"
 
+        echo "::echo::on"
         echo "::notice title=Release url::'$url'"
         echo "::notice title=Release html_url::'$html_url'"
+
         echo "::endgroup::"
 
     - name: Write markdown body file
