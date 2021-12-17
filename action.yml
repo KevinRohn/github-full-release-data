@@ -18,6 +18,42 @@ inputs:
     required: false
 
 outputs:
+  url:
+    description: ''
+    value: ${{ steps.release_data.outputs.url }}
+  html_url:
+    description: ''
+    value: ${{ steps.release_data.outputs.html_url }}
+  assets_url:
+    description: ''
+    value: ${{ steps.release_data.outputs.assets_url }}
+  upload_url:
+    description: ''
+    value: ${{ steps.release_data.outputs.upload_url }}
+  tarball_url:
+    description: ''
+    value: ${{ steps.release_data.outputs.tarball_url }}
+  zipball_url:
+    description: ''
+    value: ${{ steps.release_data.outputs.zipball_url }}
+  discussion_url:
+    description: ''
+    value: ${{ steps.release_data.outputs.discussion_url }}
+  id:
+    description: ''
+    value: ${{ steps.release_data.outputs.id }}
+  node_id:
+    description: ''
+    value: ${{ steps.release_data.outputs.node_id }}
+  tag_name:
+    description: ''
+    value: ${{ steps.release_data.outputs.tag_name }}
+  target_commitish:
+    description: ''
+    value: ${{ steps.release_data.outputs.target_commitish }}
+  name:
+    description: ''
+    value: ${{ steps.release_data.outputs.name }}
   body:
     description: >
       The `body` output from release. It's an multiline output, which is packed in a JSON object.
@@ -26,6 +62,18 @@ outputs:
       This workaround is applied because of the following multiline output problem.
       [set-output truncates multiline strings](https://github.community/t/set-output-truncates-multiline-strings/16852/9)
     value: ${{ steps.release_data.outputs.body }}
+  draft:
+    description: ''
+    value: ${{ steps.release_data.outputs.draft }}
+  prerelease:
+    description: ''
+    value: ${{ steps.release_data.outputs.prerelease }}
+  created_at:
+    description: ''
+    value: ${{ steps.release_data.outputs.created_at }}
+  published_at:
+    description: ''
+    value: ${{ steps.release_data.outputs.published_at }}
 
 runs:
   using: "composite"
@@ -42,19 +90,53 @@ runs:
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
-        echo "::echo::off"
 
         token=${{ inputs.token }}
         gh_api_url="https://api.github.com/repos/${{ inputs.repository }}"
 
         release_json_data=$(curl ${token:+"-H"} ${token:+"Authorization: token ${token}"} \
                     "$gh_api_url/releases/${{ inputs.version }}")
-
+      
+        url=$(jq -r '.url' <<< "$release_json_data")
+        html_url=$(jq -r '.html_url' <<< "$release_json_data")
+        assets_url=$(jq -r '.assets_url' <<< "$release_json_data")
+        upload_url=$(jq -r '.upload_url' <<< "$release_json_data")
+        tarball_url=$(jq -r '.tarball_url' <<< "$release_json_data")
+        zipball_url=$(jq -r '.zipball_url' <<< "$release_json_data")
+        discussion_url=$(jq -r '.discussion_url' <<< "$release_json_data")
+        id=$(jq -r '.id' <<< "$release_json_data")
+        node_id=$(jq -r '.node_id' <<< "$release_json_data")
+        tag_name=$(jq -r '.tag_name' <<< "$release_json_data")
+        target_commitish=$(jq -r '.target_commitish' <<< "$release_json_data")
+        name=$(jq -r '.name' <<< "$release_json_data")
         body=$(jq -r '.body' <<< "$release_json_data")
         body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
+        draft=$(jq -r '.draft' <<< "$release_json_data")
+        prerelease=$(jq -r '.prerelease' <<< "$release_json_data")
+        created_at=$(jq -r '.created_at' <<< "$release_json_data")
+        published_at=$(jq -r '.published_at' <<< "$release_json_data")
 
         echo "::$log_token_toggle::"
+
+        echo "::echo::off"
+
+        echo "::set-output name=url::$url"
+        echo "::set-output name=html_url::$html_url"
+        echo "::set-output name=assets_url::$assets_url"
+        echo "::set-output name=upload_url::$upload_url"
+        echo "::set-output name=tarball_url::$tarball_url"
+        echo "::set-output name=zipball_url::$zipball_url"
+        echo "::set-output name=discussion_url::$discussion_url"
+        echo "::set-output name=id::$id"
+        echo "::set-output name=node_id::$node_id"
+        echo "::set-output name=tag_name::$tag_name"
+        echo "::set-output name=target_commitish::$target_commitish"
+        echo "::set-output name=name::$name"
         echo "::set-output name=body::$body_packed_in_json"
+        echo "::set-output name=draft::$draft"
+        echo "::set-output name=prerelease::$prerelease"
+        echo "::set-output name=created_at::$created_at"
+        echo "::set-output name=published_at::$published_at"
 
         echo "::endgroup::"
 
@@ -64,7 +146,6 @@ runs:
       if: ${{ inputs.body-markdown-file-path  != '' }}
       run: |
         echo "Write markdown body file"
-        echo "::echo::off"
         echo "::group::Create markdown file"
 
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
@@ -76,5 +157,5 @@ runs:
         } >> ${{ inputs.body-markdown-file-path }}
         echo "::$log_token_toggle::"
         
-
-        echo "::notice::Saved body content to markdown file"
+        echo "::notice::Saved body content to markdown file '${{ inputs.body-markdown-file-path }}'"
+        echo "::endgroup::"
