@@ -29,18 +29,24 @@ runs:
       id: json_release_dataset
       shell: bash
       run: |
+        echo "::group::Get Release Data"
         token=${{ inputs.token }}
-
+        
+        echo "::stop-commands::`echo -n ${{ inputs.token }} | sha256sum | head -c 64`"
         gh_api_url="https://api.github.com/repos/${{ inputs.repository }}"
 
         release_json_data=$(curl ${token:+"-H"} ${token:+"Authorization: token ${token}"} \
                     "$gh_api_url/releases/${{ inputs.version }}")
 
+        # See Workaround of multiline outputs for set-output https://github.community/t/set-output-truncates-multiline-strings/16852/9
         body=$(jq -r '.body' <<< "$release_json_data")
         body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
         
         echo "::set-output name=body::$body_packed_in_json"
 
+        echo "::`echo -n ${{ github.token }} | sha256sum | head -c 64`::"
+
+        echo "::endgroup::"
     - name: Write markdown body file
       id: markdown_body
       shell: bash
@@ -50,15 +56,3 @@ runs:
         {
           echo '${{ fromJSON(steps.json_release_dataset.outputs.body) }}'
         } >> ${{ inputs.body-markdown-file-path }}
-
-    #- name: Export Markdown file
-    #  shell: bash
-    #  if: ${{ inputs.body-markdown-file-path  != '' }}
-    #  run: |
-    #    echo "export data to markdown file"
-    #    echo "${{ steps.release_data.outputs.body }}"
-    #    {
-    #      echo '${{ steps.release_data.outputs.body }}'
-    #    } >> ${{ inputs.body-markdown-file-path }}
-    # echo "${{fromJson(steps.json_release_dataset.outputs.body)}}"
-    # echo ${{ steps.json_release_dataset.outputs.body }}
