@@ -38,11 +38,10 @@ runs:
         echo "::group::Fetch data"
 
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
-
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
+        echo "::echo::off"
 
-        sleep 2
         token=${{ inputs.token }}
         gh_api_url="https://api.github.com/repos/${{ inputs.repository }}"
 
@@ -53,8 +52,9 @@ runs:
         body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
 
         echo "::$log_token_toggle::"
-        echo "::echo::off"
+        echo "::echo::on"
         echo "::set-output name=body::$body_packed_in_json"
+
         echo "::endgroup::"
 
     - name: Write markdown body file
@@ -62,8 +62,16 @@ runs:
       shell: bash
       if: ${{ inputs.body-markdown-file-path  != '' }}
       run: |
+        echo "::group::Create markdown file"
+        log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+
+        echo "::add-mask::$log_token_toggle"
+        echo "::stop-commands::$log_token_toggle"
+
         {
           echo '${{ fromJSON(steps.release_data.outputs.body) }}'
         } >> ${{ inputs.body-markdown-file-path }}
+        echo "::$log_token_toggle::"
+        echo "::echo::off"
 
-        echo "::notice body content '${{ fromJSON(steps.release_data.outputs.body) }}' is saved to '${{ inputs.body-markdown-file-path }}'::Saved body content as markdown file"
+        echo "::notice::Saved body content to markdown file"
