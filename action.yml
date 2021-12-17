@@ -49,4 +49,6 @@ runs:
       if: ${{ inputs.body-markdown-file-path  != '' }}
       run: |
         echo "export data to markdown file"
-        echo "${{ steps.release_data.outputs.body }}" > ${{ inputs.body-markdown-file-path }}
+        {
+          echo '${{ steps.release_data.outputs.body }}'
+        } >> ${{ inputs.body-markdown-file-path }}
