@@ -32,6 +32,7 @@ runs:
   steps:
     - name: Build API URL
       id: release_data
+      shell: bash
       run: |
         token=${{ inputs.token }}
         gh_api_url="https://api.github.com/repos/${{ inputs.repository }}"
