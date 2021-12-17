@@ -25,7 +25,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Get Release JSON dataset
+    - name: Get release data
       id: json_release_dataset
       shell: bash
       run: |
@@ -36,18 +36,18 @@ runs:
         release_json_data=$(curl ${token:+"-H"} ${token:+"Authorization: token ${token}"} \
                     "$gh_api_url/releases/${{ inputs.version }}")
 
-        #body=$(jq -r '.body' <<< "$release_json_data")
-        #body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
+        body=$(jq -r '.body' <<< "$release_json_data")
+        body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
         
-        packed_data=$(printf '%s' "$release_json_data" | jq --raw-input --slurp '.')
-        echo "::set-output name=data::$packed_data"
+        echo "::set-output name=body::$body_packed_in_json"
 
-    - name: Extract content from JSON dataset
-      id: release_data
+    - name: Write markdown body file
+      id: markdown_body
       shell: bash
+      if: ${{ inputs.body-markdown-file-path  != '' }}
       run: |
-        #echo "${{fromJson(steps.json_release_dataset.outputs.data)}}"
-        echo ${{ steps.json_release_dataset.outputs.data }}
+        echo "${{fromJson(steps.json_release_dataset.outputs.body)}}"
+        echo ${{ steps.json_release_dataset.outputs.body }}
 
 
     #- name: Export Markdown file
