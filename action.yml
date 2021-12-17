@@ -31,7 +31,7 @@ runs:
       run: |
         echo "::group::Get Release Data"
         token=${{ inputs.token }}
-        
+
         echo "::stop-commands::`echo -n ${{ inputs.token }} | sha256sum | head -c 64`"
         gh_api_url="https://api.github.com/repos/${{ inputs.repository }}"
 
@@ -42,10 +42,10 @@ runs:
         body=$(jq -r '.body' <<< "$release_json_data")
         body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
         
-        echo "::set-output name=body::$body_packed_in_json"
-
         echo "::`echo -n ${{ github.token }} | sha256sum | head -c 64`::"
 
+        echo "::set-output name=body::$body_packed_in_json"
+        
         echo "::endgroup::"
     - name: Write markdown body file
       id: markdown_body
