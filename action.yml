@@ -35,6 +35,8 @@ runs:
       shell: bash
 
       run: |
+        echo "Get release data"
+
         echo "::group::Fetch data"
 
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
@@ -61,9 +63,11 @@ runs:
       shell: bash
       if: ${{ inputs.body-markdown-file-path  != '' }}
       run: |
+        echo "Write markdown body file"
+        echo "::echo::off"
         echo "::group::Create markdown file"
-        log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
 
+        log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
 
@@ -71,6 +75,6 @@ runs:
           echo '${{ fromJSON(steps.release_data.outputs.body) }}'
         } >> ${{ inputs.body-markdown-file-path }}
         echo "::$log_token_toggle::"
-        echo "::echo::off"
+        
 
         echo "::notice::Saved body content to markdown file"
