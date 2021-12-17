@@ -45,6 +45,7 @@ runs:
         echo ::set-output name=body::"$body"
 
     - name: Export Markdown file
+      shell: bash
       if: ${{ inputs.body-markdown-file-path  != '' }}
       run: |
         cat ${{ steps.release_data.outputs.body }} > ${{ inputs.body-markdown-file-path }}
