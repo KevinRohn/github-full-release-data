@@ -136,9 +136,6 @@ runs:
         echo "::set-output name=created_at::$created_at"
         echo "::set-output name=published_at::$published_at"
 
-        echo "::notice title='Release url'::'$url'"
-        echo "::notice title='Release html_url'::'${html_url}'"
-
         echo "::endgroup::"
 
     - name: Write markdown body file
@@ -159,4 +156,6 @@ runs:
         echo "::$log_token_toggle::"
         
         echo "::notice title=Release Markdown file::Saved body content to markdown file '${{ inputs.body-markdown-file-path }}'"
+        echo "::notice title=Release tag_name::${{ steps.release_data.outputs.tag_name }}"
+        echo "::notice title=Release html_url::${{ steps.release_data.outputs.html_url }}"
         echo "::endgroup::"
