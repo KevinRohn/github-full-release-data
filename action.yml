@@ -83,7 +83,7 @@ runs:
       shell: bash
 
       run: |
-        echo "Get release data"
+        echo "get release data"
 
         echo "::group::Fetch data"
 
@@ -145,7 +145,7 @@ runs:
       shell: bash
       if: ${{ inputs.body-markdown-file-path  != '' }}
       run: |
-        echo "Write markdown body file"
+        echo "write markdown body file"
         echo "::group::Create markdown file"
 
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
@@ -165,6 +165,9 @@ runs:
     - name: show output values
       shell: bash
       run: |
+        echo "show output values"
+        echo "::group::output values"
+
         echo "INFO: Release url ${{ steps.release_data.outputs.url }}"
         echo "INFO: Release html_url ${{ steps.release_data.outputs.html_url }}"
         echo "INFO: Release assets_url${{ steps.release_data.outputs.assets_url }}"
@@ -182,3 +185,5 @@ runs:
         echo "INFO: Release prerelease ${{ steps.release_data.outputs.prerelease }}"
         echo "INFO: Release created_at ${{ steps.release_data.outputs.created_at }}"
         echo "INFO: Release published_at ${{ steps.release_data.outputs.published_at }}"
+        
+        echo "::endgroup::"
