@@ -30,8 +30,11 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Build API URL
-      id: release_data
+    - name: Cleanup workspace path
+      uses: mickem/clean-after-action@v1
+
+    - name: Get Release JSON dataset
+      id: json_release_dataset
       shell: bash
       run: |
         token=${{ inputs.token }}
@@ -40,21 +43,25 @@ runs:
         release_json_data=$(curl ${token:+"-H"} ${token:+"Authorization: token ${token}"} \
                     "$gh_api_url/releases/${{ inputs.version }}")
 
-        body=$(jq -r '.body' <<< "$release_json_data")
+        #body=$(jq -r '.body' <<< "$release_json_data")
+        #body_packed_in_json=$(printf '%s' "$body" | jq --raw-input --slurp '.')
 
-        #body=$(echo "$release_json_data" | jq -r ".body")
-        echo "start body output"
-        echo "$body"
-        echo "end body output"
+        echo "::set-output name=data::$release_json_data"
 
-        echo "::set-output name=body::$body"
-
-    - name: Export Markdown file
+    - name: Extract content from JSON dataset
+      id: release_data
       shell: bash
-      if: ${{ inputs.body-markdown-file-path  != '' }}
       run: |
-        echo "export data to markdown file"
-        echo "${{ steps.release_data.outputs.body }}"
-        {
-          echo '${{ steps.release_data.outputs.body }}'
-        } >> ${{ inputs.body-markdown-file-path }}
+        echo "${{fromJson(steps.json_release_dataset.outputs.data).version}}"
+        #${{ steps.json_release_dataset.outputs.data }}
+    
+
+    #- name: Export Markdown file
+    #  shell: bash
+    #  if: ${{ inputs.body-markdown-file-path  != '' }}
+    #  run: |
+    #    echo "export data to markdown file"
+    #    echo "${{ steps.release_data.outputs.body }}"
+    #    {
+    #      echo '${{ steps.release_data.outputs.body }}'
+    #    } >> ${{ inputs.body-markdown-file-path }}
