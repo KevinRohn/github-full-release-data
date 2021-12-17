@@ -118,6 +118,8 @@ runs:
 
         echo "::$log_token_toggle::"
 
+        echo "::echo::off"
+
         echo "::set-output name=url::$url"
         echo "::set-output name=html_url::$html_url"
         echo "::set-output name=assets_url::$assets_url"
@@ -136,6 +138,9 @@ runs:
         echo "::set-output name=created_at::$created_at"
         echo "::set-output name=published_at::$published_at"
 
+        echo "::echo::on"
+        echo "::notice title=Release tag_name::${tag_name}"
+
         echo "::endgroup::"
 
     - name: Write markdown body file
@@ -145,7 +150,7 @@ runs:
       run: |
         echo "Write markdown body file"
         echo "::group::Create markdown file"
-
+        
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
@@ -156,6 +161,6 @@ runs:
         echo "::$log_token_toggle::"
         
         echo "::notice title=Release Markdown file::Saved body content to markdown file '${{ inputs.body-markdown-file-path }}'"
-        echo "::notice title=Release tag_name::${{ steps.release_data.outputs.tag_name }}"
         echo "::notice title=Release html_url::${{ steps.release_data.outputs.html_url }}"
+
         echo "::endgroup::"
