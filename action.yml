@@ -40,8 +40,10 @@ runs:
         release_json_data=$(curl ${token:+"-H"} ${token:+"Authorization: token ${token}"} \
                     "$gh_api_url/releases/${{ inputs.version }}")
 
-        body=$(echo "$release_json_data" | jq -r ".body")
+        body=$(jq -r '.body' <<< "$release_json_data")
 
+        #body=$(echo "$release_json_data" | jq -r ".body")
+        echo "$body"
         echo "::set-output name=body::$body"
 
     - name: Export Markdown file
