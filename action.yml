@@ -24,6 +24,14 @@ inputs:
       (Optional) Specify an output path where the body output should be saved.
       If the path is valid and the file is accessible then, the body output content will be saved into the file.
       Save the file in the current working directory: ./release-content.md
+  
+  asset-file:
+    required: false
+    description: ''
+
+  asset-output:
+    description: ''
+    required: false
 
 outputs:
   url:
@@ -92,7 +100,6 @@ runs:
     - name: Get release data
       id: release_data
       shell: bash
-
       run: |
         echo "get release data"
 
@@ -182,6 +189,65 @@ runs:
 
         echo "::endgroup::"
     
+    - name: Download release assets
+      id: release_asset_download
+      if: ${{ inputs.assets_list_json  != '' }}
+      shell: bash
+      run: |
+        echo "Download release assets"
+        echo "::group::Create markdown file"
+
+        if [[ ! -d "${{ inputs.asset-output }}" ]]; then
+          echo "::error title=Asset output path does`nt exist.::No ouput path definied."
+          exit 1
+        fi
+
+        log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        echo "::add-mask::$log_token_toggle"
+        echo "::stop-commands::$log_token_toggle"
+        
+        token=${{ inputs.token }}
+        echo "::add-mask::$token"
+        auth_header="Authorization: token ${token}"
+
+        base_asset_url="https://api.github.com/repos/${{ inputs.repository }}/releases/assets/"
+
+        search_string=${{ inputs.assets_list_json }}
+        search_arr=(${search_string//,/ })
+        
+
+        jq -c '.[]' ${{ steps.release_data.outputs.body }} | while read i; do
+          asset_name=$(jq -r '.name' <<<"$i")
+          asset_id=$(jq -r '.id' <<<"$i")
+          should_download=false
+          for match_string in "${search_arr[@]}"; do
+            if [[ "$match_string" = *"*"* ]]; then # wildcard matching
+              if [[ "$asset_name" = *"${match_string//\*/}"* ]]; then # remove wildcard in search string and check matching string
+                echo $asset_name
+                should_download=true
+              fi
+            else
+              if [[ "$asset_name" = "$match_string" ]]; then
+                echo $asset_name
+                should_download=true
+              fi
+            fi
+          done
+          if [[ "$should_download" == true ]]; then
+            download_url=${base_asset_url}${asset_id}
+            curl \
+              -L \
+              -H "${auth_header}" \
+              -H "Accept:application/octet-stream" \
+              -o "${{ inputs.asset-output }}/${asset_name}" \
+              "${download_url}"
+          fi
+        done
+
+        echo "::$log_token_toggle::"
+
+        echo "::endgroup::"
+
     - name: show output values
       shell: bash
       run: |
