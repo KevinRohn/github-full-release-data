@@ -5,16 +5,32 @@ inputs:
     description: "Repository `<org>/<repo>`"
     required: false
     default: ${{ github.repository }}
+
   token:
     description: "Token for the repository. e.g.: `secrets.GITHUB_TOKEN`"
     required: false
     default: ${{ github.token }}
+
   version:
-    description: "Release version `latest` or `tags/<tag-name>`"
     required: false
     default: "latest"
+    description: > 
+      (Optional) If the input value is not set, the default value `latest` is used.
+      It's possible to fetch release data from a given tag. To fetch a specific tag just use `<tag-name>`.
+
   body-markdown-file-path:
-    description: "Output path for release body content as Markdown file"
+    required: false
+    description: >
+      (Optional) Specify an output path where the body output should be saved.
+      If the path is valid and the file is accessible then, the body output content will be saved into the file.
+      Save the file in the current working directory: ./release-content.md
+  
+  asset-file:
+    required: false
+    description: ''
+
+  asset-output:
+    description: ''
     required: false
 
 outputs:
@@ -74,6 +90,12 @@ outputs:
   published_at:
     description: ''
     value: ${{ steps.release_data.outputs.published_at }}
+  assets_array_json:
+    description: ''
+    value: ${{ steps.release_data.outputs.assets_array_json }}
+  author_json:
+    description: ''
+    value: ${{ steps.release_data.outputs.author_json }}
 
 runs:
   using: "composite"
@@ -81,7 +103,6 @@ runs:
     - name: Get release data
       id: release_data
       shell: bash
-
       run: |
         echo "get release data"
 
@@ -94,8 +115,13 @@ runs:
         token=${{ inputs.token }}
         gh_api_url="https://api.github.com/repos/${{ inputs.repository }}"
 
-        release_json_data=$(curl ${token:+"-H"} ${token:+"Authorization: token ${token}"} \
-                    "$gh_api_url/releases/${{ inputs.version }}")
+        if [[ "${{ inputs.version }}" == "latest" ]]; then
+          gh_api_url="https://api.github.com/repos/${{ inputs.repository }}/releases/latest"
+        else
+          gh_api_url="https://api.github.com/repos/${{ inputs.repository }}/releases/tags/${{ inputs.version }}$"
+        fi
+
+        release_json_data=$(curl ${token:+"-H"} ${token:+"Authorization: token ${token}"} "$gh_api_url")
       
         url=$(jq -r '.url' <<< "$release_json_data")
         html_url=$(jq -r '.html_url' <<< "$release_json_data")
@@ -115,6 +141,10 @@ runs:
         prerelease=$(jq -r '.prerelease' <<< "$release_json_data")
         created_at=$(jq -r '.created_at' <<< "$release_json_data")
         published_at=$(jq -r '.published_at' <<< "$release_json_data")
+        author=$(jq -r '.author' <<< "$release_json_data")
+        author_packed_in_json=$(printf '%s' "$author" | jq --raw-input --slurp '.')   
+        assets=$(jq -r '.assets' <<< "$release_json_data")
+        assets_packed_in_json=$(printf '%s' "$assets" | jq --raw-input --slurp '.')
 
         echo "::$log_token_toggle::"
 
@@ -137,6 +167,8 @@ runs:
         echo "::set-output name=prerelease::$prerelease"
         echo "::set-output name=created_at::$created_at"
         echo "::set-output name=published_at::$published_at"
+        echo "::set-output name=author_json::$author_packed_in_json"
+        echo "::set-output name=assets_array_json::$assets_packed_in_json"
 
         echo "::endgroup::"
 
@@ -162,6 +194,65 @@ runs:
 
         echo "::endgroup::"
     
+    - name: Download release assets
+      id: release_asset_download
+      if: ${{ inputs.assets_array_json  != '' }}
+      shell: bash
+      run: |
+        echo "Download release assets"
+        echo "::group::Create markdown file"
+
+        if [[ ! -d "${{ inputs.asset-output }}" ]]; then
+          echo "::error title=Asset output path does`nt exist.::No ouput path definied."
+          exit 1
+        fi
+
+        log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        echo "::add-mask::$log_token_toggle"
+        echo "::stop-commands::$log_token_toggle"
+        
+        token=${{ inputs.token }}
+        echo "::add-mask::$token"
+        auth_header="Authorization: token ${token}"
+
+        base_asset_url="https://api.github.com/repos/${{ inputs.repository }}/releases/assets/"
+
+        search_string=${{ inputs.assets_array_json }}
+        search_arr=(${search_string//,/ })
+        
+
+        jq -c '.[]' ${{ steps.release_data.outputs.body }} | while read i; do
+          asset_name=$(jq -r '.name' <<<"$i")
+          asset_id=$(jq -r '.id' <<<"$i")
+          should_download=false
+          for match_string in "${search_arr[@]}"; do
+            if [[ "$match_string" = *"*"* ]]; then # wildcard matching
+              if [[ "$asset_name" = *"${match_string//\*/}"* ]]; then # remove wildcard in search string and check matching string
+                echo $asset_name
+                should_download=true
+              fi
+            else
+              if [[ "$asset_name" = "$match_string" ]]; then
+                echo $asset_name
+                should_download=true
+              fi
+            fi
+          done
+          if [[ "$should_download" == true ]]; then
+            download_url=${base_asset_url}${asset_id}
+            curl \
+              -L \
+              -H "${auth_header}" \
+              -H "Accept:application/octet-stream" \
+              -o "${{ inputs.asset-output }}/${asset_name}" \
+              "${download_url}"
+          fi
+        done
+
+        echo "::$log_token_toggle::"
+
+        echo "::endgroup::"
+
     - name: show output values
       shell: bash
       run: |
@@ -185,5 +276,6 @@ runs:
         echo "INFO: Release prerelease ${{ steps.release_data.outputs.prerelease }}"
         echo "INFO: Release created_at ${{ steps.release_data.outputs.created_at }}"
         echo "INFO: Release published_at ${{ steps.release_data.outputs.published_at }}"
-        
+        echo "INFO: Release assets_array_json ${{ fromJSON(steps.release_data.outputs.assets_array_json) }}"
+        echo "INFO: Release author_json ${{ fromJSON(steps.release_data.outputs.author_json) }}"
         echo "::endgroup::"
