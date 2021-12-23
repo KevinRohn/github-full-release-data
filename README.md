@@ -1,6 +1,6 @@
 # 📦  Github full release data
 
-Github action to retrieve all data from github releases.
+Github action to retrieve all release data from github releases.
 
 ## Why another github-action to fetch release data?
 
