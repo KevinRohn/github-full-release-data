@@ -277,5 +277,5 @@ runs:
         echo "INFO: Release created_at ${{ steps.release_data.outputs.created_at }}"
         echo "INFO: Release published_at ${{ steps.release_data.outputs.published_at }}"
         echo "INFO: Release assets_array_json ${{ fromJSON(steps.release_data.outputs.assets_array_json) }}"
-        echo "INFO: Release assets_array_json ${{ fromJSON(steps.release_data.outputs.author_json) }}"
+        echo "INFO: Release author_json ${{ fromJSON(steps.release_data.outputs.author_json) }}"
         echo "::endgroup::"
