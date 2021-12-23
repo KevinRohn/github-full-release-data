@@ -90,9 +90,12 @@ outputs:
   published_at:
     description: ''
     value: ${{ steps.release_data.outputs.published_at }}
-  assets_list_json:
+  assets_array_json:
     description: ''
-    value: ${{ steps.release_data.outputs.assets_list_json }}
+    value: ${{ steps.release_data.outputs.assets_array_json }}
+  author_json:
+    description: ''
+    value: ${{ steps.release_data.outputs.author_json }}
 
 runs:
   using: "composite"
@@ -138,7 +141,8 @@ runs:
         prerelease=$(jq -r '.prerelease' <<< "$release_json_data")
         created_at=$(jq -r '.created_at' <<< "$release_json_data")
         published_at=$(jq -r '.published_at' <<< "$release_json_data")
-
+        author=$(jq -r '.author' <<< "$release_json_data")
+        author_packet_in_json=$(printf '%s' "$author" | jq --raw-input --slurp '.')   
         assets=$(jq -r '.assets' <<< "$release_json_data")
         assets_packed_in_json=$(printf '%s' "$assets" | jq --raw-input --slurp '.')
 
@@ -163,7 +167,8 @@ runs:
         echo "::set-output name=prerelease::$prerelease"
         echo "::set-output name=created_at::$created_at"
         echo "::set-output name=published_at::$published_at"
-        echo "::set-output name=assets_list_json::$assets_packed_in_json"
+        echo "::set-output name=authour_json::$author_packet_in_json"
+        echo "::set-output name=assets_array_json::$assets_packed_in_json"
 
         echo "::endgroup::"
 
@@ -191,7 +196,7 @@ runs:
     
     - name: Download release assets
       id: release_asset_download
-      if: ${{ inputs.assets_list_json  != '' }}
+      if: ${{ inputs.assets_array_json  != '' }}
       shell: bash
       run: |
         echo "Download release assets"
@@ -212,7 +217,7 @@ runs:
 
         base_asset_url="https://api.github.com/repos/${{ inputs.repository }}/releases/assets/"
 
-        search_string=${{ inputs.assets_list_json }}
+        search_string=${{ inputs.assets_array_json }}
         search_arr=(${search_string//,/ })
         
 
@@ -271,5 +276,6 @@ runs:
         echo "INFO: Release prerelease ${{ steps.release_data.outputs.prerelease }}"
         echo "INFO: Release created_at ${{ steps.release_data.outputs.created_at }}"
         echo "INFO: Release published_at ${{ steps.release_data.outputs.published_at }}"
-        echo "INFO: Release assets_list_json ${{ steps.release_data.outputs.assets_list_json }}"
+        echo "INFO: Release assets_array_json ${{ fromJSON(steps.release_data.outputs.assets_array_json) }}"
+        echo "INFO: Release assets_array_json ${{ fromJSON(steps.release_data.outputs.author_json) }}"
         echo "::endgroup::"
