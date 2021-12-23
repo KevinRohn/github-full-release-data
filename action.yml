@@ -142,7 +142,7 @@ runs:
         created_at=$(jq -r '.created_at' <<< "$release_json_data")
         published_at=$(jq -r '.published_at' <<< "$release_json_data")
         author=$(jq -r '.author' <<< "$release_json_data")
-        author_packet_in_json=$(printf '%s' "$author" | jq --raw-input --slurp '.')   
+        author_packed_in_json=$(printf '%s' "$author" | jq --raw-input --slurp '.')   
         assets=$(jq -r '.assets' <<< "$release_json_data")
         assets_packed_in_json=$(printf '%s' "$assets" | jq --raw-input --slurp '.')
 
@@ -167,7 +167,7 @@ runs:
         echo "::set-output name=prerelease::$prerelease"
         echo "::set-output name=created_at::$created_at"
         echo "::set-output name=published_at::$published_at"
-        echo "::set-output name=authour_json::$author_packet_in_json"
+        echo "::set-output name=author_json::$author_packed_in_json"
         echo "::set-output name=assets_array_json::$assets_packed_in_json"
 
         echo "::endgroup::"
