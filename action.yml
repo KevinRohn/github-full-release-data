@@ -8,8 +8,8 @@ inputs:
       (Optional) Repository name to fetch release data.
       
       If no repository is passed as an input. The repository from the build workflow is used. 
-      It`s possible to fetch release data from any given repository. Just use `<org>/<repo>` as an input parameter.
-      It`s also possible to fetch release data from private repositories. In this case just pass the `token` input parameter.
+      It's possible to fetch release data from any given repository. Just use `<org>/<repo>` as an input parameter.
+      It's also possible to fetch release data from private repositories. In this case just pass the `token` input parameter.
 
   token:
     required: false
