@@ -46,7 +46,7 @@ inputs:
       To download multiple release asset files use `,` comma as a separator.
       Example: 
         Download all .PNG and .JPEG files: `*.PNG,*.JPEG`
-        Download release asset with static name: `myfile-to-download.extension`
+        Download release asset with a static name: `myfile-to-download.extension`
 
   asset-output:
     required: false
@@ -94,17 +94,17 @@ outputs:
     value: ${{ steps.release_data.outputs.name }}
   body:
     description: >
-      The `body` output from release. It's an multiline output, which is packed in a JSON object.
+      The `body` output from release. It's a multiline output, which is packed in a JSON object.
       The output can be used with the `fromJSON` function `(steps.<id>.outputs.body)`.
 
       This workaround is applied because of the following multiline output problem.
       [set-output truncates multiline strings](https://github.community/t/set-output-truncates-multiline-strings/16852/9)
     value: ${{ steps.release_data.outputs.body }}
   draft:
-    description: 'Shows if the release is an draft release or not (true/false)'
+    description: 'Shows if the release is a draft release or not (true/false)'
     value: ${{ steps.release_data.outputs.draft }}
   prerelease:
-    description: 'Shows if the release is an pre-release (true/false)'
+    description: 'Shows if the release is a pre-release (true/false)'
     value: ${{ steps.release_data.outputs.prerelease }}
   created_at:
     description: 'Shows the release creation date'
@@ -114,12 +114,12 @@ outputs:
     value: ${{ steps.release_data.outputs.published_at }}
   assets_array_json:
     description: >
-      The `assets_array_json` output from release. It's an multiline output, which is packed in a JSON object.
+      The `assets_array_json` output from release. It's a multiline output, which is packed in a JSON object.
       The output can be used with the `fromJSON` function `(steps.<id>.outputs.assets_array_json)`.
     value: ${{ steps.release_data.outputs.assets_array_json }}
   author_json:
     description: >
-      The `author_json` output from release. It's an multiline output, which is packed in a JSON object.
+      The `author_json` output from release. It's a multiline output, which is packed in a JSON object.
       The output can be used with the `fromJSON` function `(steps.<id>.outputs.assets_array_json)`.
     value: ${{ steps.release_data.outputs.author_json }}
 
