@@ -69,10 +69,10 @@ outputs:
     description: 'Upload url for release assets'
     value: ${{ steps.release_data.outputs.upload_url }}
   tarball_url:
-    description: 'url to tarball content '
+    description: 'Url to tarball content '
     value: ${{ steps.release_data.outputs.tarball_url }}
   zipball_url:
-    description: 'url to zipball content'
+    description: 'Url to zipball content'
     value: ${{ steps.release_data.outputs.zipball_url }}
   discussion_url:
     description: 'Discussion url - can be `null` if discussion is deactivated'
@@ -84,7 +84,7 @@ outputs:
     description: 'Release node id'
     value: ${{ steps.release_data.outputs.node_id }}
   tag_name:
-    description: 'Release tag_name'
+    description: 'Release tag name'
     value: ${{ steps.release_data.outputs.tag_name }}
   target_commitish:
     description: 'Target from which the release is created'
@@ -95,7 +95,7 @@ outputs:
   body:
     description: >
       The `body` output from release. It's an multiline output, which is packed in a JSON object.
-      The output can be used with the `fromJSON`` function `(steps.<id>.outputs.body)`.
+      The output can be used with the `fromJSON` function `(steps.<id>.outputs.body)`.
 
       This workaround is applied because of the following multiline output problem.
       [set-output truncates multiline strings](https://github.community/t/set-output-truncates-multiline-strings/16852/9)
@@ -115,12 +115,12 @@ outputs:
   assets_array_json:
     description: >
       The `assets_array_json` output from release. It's an multiline output, which is packed in a JSON object.
-      The output can be used with the `fromJSON`` function `(steps.<id>.outputs.assets_array_json)`.
+      The output can be used with the `fromJSON` function `(steps.<id>.outputs.assets_array_json)`.
     value: ${{ steps.release_data.outputs.assets_array_json }}
   author_json:
     description: >
-      The `assets_array_json` output from release. It's an multiline output, which is packed in a JSON object.
-      The output can be used with the `fromJSON`` function `(steps.<id>.outputs.assets_array_json)`.
+      The `author_json` output from release. It's an multiline output, which is packed in a JSON object.
+      The output can be used with the `fromJSON` function `(steps.<id>.outputs.assets_array_json)`.
     value: ${{ steps.release_data.outputs.author_json }}
 
 runs:
