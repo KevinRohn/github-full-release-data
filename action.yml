@@ -1,4 +1,4 @@
-name: "Get full release data"
+name: "Github release data"
 author: Kevin Rohn
 description: "Get all data from Github release of a given repository."
 
