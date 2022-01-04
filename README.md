@@ -1,4 +1,4 @@
-# :package: Github Action `Github full release data`
+# :package: Github Action `full release data`
 
 > A Github action to retrieve all release data from github releases. 
 
