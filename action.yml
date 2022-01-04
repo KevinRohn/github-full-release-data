@@ -1,5 +1,11 @@
 name: "Get full release data"
+author: Kevin Rohn
 description: "Get all data from Github release of a given repository."
+
+branding:
+  icon: 'package'
+  color: 'green'
+
 inputs:
   repository:
     required: false
