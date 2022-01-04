@@ -13,7 +13,25 @@ Use latest release tag, body content or, download release assets of a github rel
 
 ## Usage
 
->:triangular_flag_on_post: See the [example repository](https://github.com/KevinRohn/example-github-full-release-data) for more usage examples.
+>:white_flag: See the [inputs](#inputs) section for detailed descriptions.
+
+```yml
+  - name: Get Release data of private repository
+    id: release_data
+    uses: KevinRohn/github-full-release-data@v2.0
+    with:
+      repository: "organisation-or-username/repository" # (Optional) Repository name to fetch release data.
+      token: ${{ secrets.GITHUB_TOKEN }} # (Optional) `token` of the private repository from which the release information should be retrieved.
+      version: latest  # (Optional) The version from which the release information is to be retrieved.
+      body-markdown-file-path: output/release-body-content.md # (Optional) Specify an output path where the body output should be saved.
+      asset-file: '*.dat,picture.jpg' # (Optional) Name of the asset files to download.
+      asset-output: 'download-output/' # (Optional) The output path in which the downloaded asset files should be placed.
+``` 
+
+
+## Usage Examples
+
+>:triangular_flag_on_post: See the [`example-github-full-release-data` repository](https://github.com/KevinRohn/example-github-full-release-data) for more examples.
 
 ### Get the latest `tag_name` and use it in further steps
 
