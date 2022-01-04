@@ -18,13 +18,50 @@ Use latest release tag, body content or, download release assets of a github rel
 ### Get the latest `tag_name` and use it in further steps
 
 ```yml
-        # Fetch release data of the current repository from where the workflow is used.
-      - name: Get "${{ github.repository }}" Release notes
-        id: release_data
-        uses: KevinRohn/github-full-release-data@v2.0
+    # Fetch release data of the current repository from where the workflow is used.
+  - name: Get Release data
+    id: release_data
+    uses: KevinRohn/github-full-release-data@v2.0
 
-      - name: Show tag name with echo
-        run: echo ${{ steps.release_data.outputs.tag_name }}
+  - name: Show tag name with echo
+    run: echo ${{ steps.release_data.outputs.tag_name }}
+```
+
+### Get `body` content from github release of a private repository and use it in further steps
+
+```yml
+  - name: Get Release data of private repository
+    id: release_data
+    uses: KevinRohn/github-full-release-data@v2.0
+    with:
+      repository: "organisation-or-username/repository"
+      token: ${{ secrets.GITHUB_TOKEN }}
+      version: latest
+  
+  - name: Write release `body` content line by line to file
+    run: |
+      {
+        echo '${{ fromJSON(steps.release_data.outputs.body) }}'
+      } >> test-file.txt
+
+  - name: Show release `body` content
+    run: |
+      echo '${{ fromJSON(steps.release_data.outputs.body) }}'
+```
+
+### Download release `asset-file` from github release
+
+```yml
+  - name: Download release asset file
+    id: release_data
+    uses: KevinRohn/github-full-release-data@v2.0
+    with: 
+      asset-file: '*.dat'
+      asset-output: './'
+
+  - name: Show file output
+    run: |
+      ls -lah
 ```
 
 
@@ -96,23 +133,23 @@ The action supports the following inputs:
 
 ## Outputs
 
-| Output              | Description                                                                                                                                                                                                  |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `url`               | Release URL to use in API calls                                                                                                                                                                              |
-| `html_url`          | Release URL                                                                                                                                                                                                  |
-| `assets_url`        | Asset URL to use in API calls                                                                                                                                                                                |
-| `upload_url`        | Upload URL for release assets                                                                                                                                                                                |
-| `tarball_url`       | Url to tarball content                                                                                                                                                                                       |
-| `zipball_url`       | Url to zipball content                                                                                                                                                                                       |
-| `discussion_url`    | Discussion URL - can be `null` if discussion is deactivated                                                                                                                                                  |
-| `id`                | Release id                                                                                                                                                                                                   |
-| `node_id`           | Release node id                                                                                                                                                                                              |
-| `tag_name`          | Release tag name                                                                                                                                                                                             |
-| `target_commitish`  | Target from which the release is created                                                                                                                                                                     |
+| Output              | Description                                                                                                                                                                                                 |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `url`               | Release URL to use in API calls                                                                                                                                                                             |
+| `html_url`          | Release URL                                                                                                                                                                                                 |
+| `assets_url`        | Asset URL to use in API calls                                                                                                                                                                               |
+| `upload_url`        | Upload URL for release assets                                                                                                                                                                               |
+| `tarball_url`       | Url to tarball content                                                                                                                                                                                      |
+| `zipball_url`       | Url to zipball content                                                                                                                                                                                      |
+| `discussion_url`    | Discussion URL - can be `null` if discussion is deactivated                                                                                                                                                 |
+| `id`                | Release id                                                                                                                                                                                                  |
+| `node_id`           | Release node id                                                                                                                                                                                             |
+| `tag_name`          | Release tag name                                                                                                                                                                                            |
+| `target_commitish`  | Target from which the release is created                                                                                                                                                                    |
 | `body`              | The `body` output from release. It's a multiline output, which is packed in a JSON object. <br/> The output can be used with the `fromJSON` function `(steps.<id>.outputs.body)`.                           |
 | `draft`             | Shows if the release is a draft release or not (true/false)                                                                                                                                                 |
 | `prerelease`        | Shows if the release is a pre-release (true/false)                                                                                                                                                          |
-| `created_at`        | Shows the release creation date                                                                                                                                                                              |
-| `published_at`      | Shows the published date of the release                                                                                                                                                                      |
+| `created_at`        | Shows the release creation date                                                                                                                                                                             |
+| `published_at`      | Shows the published date of the release                                                                                                                                                                     |
 | `assets_array_json` | The `assets_array_json` output from release. It's a multiline output, which is packed in a JSON object. <br/> The output can be used with the `fromJSON` function `(steps.<id>.outputs.assets_array_json)`. |
 | `author_json`       | The `author_json` output from release. It's a multiline output, which is packed in a JSON object. <br/> The output can be used with the `fromJSON` function `(steps.<id>.outputs.assets_array_json)`.       |
