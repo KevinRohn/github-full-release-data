@@ -150,7 +150,7 @@ runs:
         if [[ "${{ inputs.version }}" == "latest" ]]; then
           gh_api_url="https://api.github.com/repos/${{ inputs.repository }}/releases/latest"
         else
-          gh_api_url="https://api.github.com/repos/${{ inputs.repository }}/releases/tags/${{ inputs.version }}$"
+          gh_api_url="https://api.github.com/repos/${{ inputs.repository }}/releases/tags/${{ inputs.version }}"
         fi
 
         release_json_data=$(curl ${token:+"-H"} ${token:+"Authorization: token ${token}"} "$gh_api_url")
