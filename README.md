@@ -18,7 +18,7 @@ Use latest release tag, body content or, download release assets of a github rel
 ```yml
   - name: Get Release data of private repository
     id: release_data
-    uses: KevinRohn/github-full-release-data@v2.0.1
+    uses: KevinRohn/github-full-release-data@v2
     with:
       repository: "organisation-or-username/repository" # (Optional) Repository name to fetch release data.
       token: ${{ secrets.GITHUB_TOKEN }} # (Optional) `token` of the private repository from which the release information should be retrieved.
@@ -39,7 +39,7 @@ Use latest release tag, body content or, download release assets of a github rel
     # Fetch release data of the current repository from where the workflow is used.
   - name: Get Release data
     id: release_data
-    uses: KevinRohn/github-full-release-data@v2.0.1
+    uses: KevinRohn/github-full-release-data@v2
 
   - name: Show tag name with echo
     run: echo ${{ steps.release_data.outputs.tag_name }}
@@ -50,7 +50,7 @@ Use latest release tag, body content or, download release assets of a github rel
 ```yml
   - name: Get Release data of private repository
     id: release_data
-    uses: KevinRohn/github-full-release-data@v2.0.1
+    uses: KevinRohn/github-full-release-data@v2
     with:
       repository: "organisation-or-username/repository"
       token: ${{ secrets.GITHUB_TOKEN }}
@@ -72,7 +72,7 @@ Use latest release tag, body content or, download release assets of a github rel
 ```yml
   - name: Download release asset file
     id: release_data
-    uses: KevinRohn/github-full-release-data@v2.0.1
+    uses: KevinRohn/github-full-release-data@v2
     with: 
       asset-file: '*.dat'
       asset-output: './'
