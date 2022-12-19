@@ -233,6 +233,7 @@ runs:
           exit 1
         fi
 
+        jq
 
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
         #echo "::add-mask::$log_token_toggle"
