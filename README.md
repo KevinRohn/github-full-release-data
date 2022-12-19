@@ -174,10 +174,10 @@ The action supports the following inputs:
 
 ## Support
 
-### Supported runners for  [v2](https://github.com/KevinRohn/github-full-release-data/releases/tag/v2)
+### Supported runners for Version [v2](https://github.com/KevinRohn/github-full-release-data/releases/tag/v2)
 
 | OS | supported? |
 | - | - |
 | `Linux OS runner` | :white_check_mark: |
 | `macOS runner` | :x: |
-| `windows OS runner` | :x| 
+| `windows OS runner` | :x: | 
