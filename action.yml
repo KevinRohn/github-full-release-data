@@ -253,6 +253,7 @@ runs:
         if [[ "$RUNNER_OS" == "Linux" ]]; then
           log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
         elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          echo "noToken"
           #log_token_toggle=$(echo -n ${{ inputs.token }} | shasum -a 256 | head -c 64)
         else
           exit 1;
