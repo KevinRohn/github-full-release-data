@@ -257,7 +257,8 @@ runs:
         else
           exit 1;
         fi
-        
+
+        found_at_least_one_matching_file=false
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
         
@@ -275,7 +276,6 @@ runs:
         done
         regex_search=${regex_search:1}
 
-        found_at_least_one_matching_file=false
         jq -c '.[]' <<< '${{ fromJSON(steps.release_data.outputs.assets_array_json) }}' | while read i; do
           asset_name=$(jq -r '.name' <<<"$i")
           asset_id=$(jq -r '.id' <<<"$i")
@@ -297,7 +297,7 @@ runs:
         echo "::$log_token_toggle::"
 
         if [[ "$found_at_least_one_matching_file" == false ]]; then
-          echo "::warning title=No matching download asset file::No asset file matching one of these patterns was found `${{ inputs.asset-file }}`."
+          echo "::warning title=No matching download asset file::No asset file matching one of these patterns was found."
         fi
 
         echo "::endgroup::"
