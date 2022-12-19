@@ -253,12 +253,11 @@ runs:
         if [[ "$RUNNER_OS" == "Linux" ]]; then
           log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
         elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          log_token_toggle=$(echo -n ${{ inputs.token }} | shasum -a 256 | head -c 64)
+          #log_token_toggle=$(echo -n ${{ inputs.token }} | shasum -a 256 | head -c 64)
         else
           exit 1;
         fi
 
-        found_at_least_one_matching_file=false
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
         
@@ -282,7 +281,6 @@ runs:
           should_download=false
           if [[ $(echo "$asset_name" | grep -E -o "$regex_search") != "" ]]; then
             should_download=true
-            found_at_least_one_matching_file=true
           fi
           if [[ "$should_download" == true ]]; then
             download_url=${base_asset_url}${asset_id}
@@ -294,11 +292,7 @@ runs:
               "${download_url}"
           fi
         done
-        echo "::$log_token_toggle::"
-
-        if [[ "$found_at_least_one_matching_file" == false ]]; then
-          echo "::warning title=No matching download asset file::No asset file matching one of these patterns was found."
-        fi
+        #echo "::$log_token_toggle::"
 
         echo "::endgroup::"
 
