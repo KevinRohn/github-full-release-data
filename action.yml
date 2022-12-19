@@ -232,7 +232,7 @@ runs:
 
         if [[ ${{ inputs.asset-output }} != '' ]]; then
           if [[ ! -d "${{ inputs.asset-output }}" ]]; then
-            echo "::error title=Asset output path does`nt exist.::No ouput path definied."
+            echo "::error title=Asset output path does not exist.::No ouput path definied."
             exit 1
           fi
         fi
