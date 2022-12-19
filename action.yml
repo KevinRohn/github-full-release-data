@@ -182,26 +182,26 @@ runs:
 
         echo "::echo::off"
 
-        echo "::set-output name=url::$url"
-        echo "::set-output name=html_url::$html_url"
-        echo "::set-output name=assets_url::$assets_url"
-        echo "::set-output name=upload_url::$upload_url"
-        echo "::set-output name=tarball_url::$tarball_url"
-        echo "::set-output name=zipball_url::$zipball_url"
-        echo "::set-output name=discussion_url::$discussion_url"
-        echo "::set-output name=id::$id"
-        echo "::set-output name=node_id::$node_id"
-        echo "::set-output name=tag_name::$tag_name"
-        echo "::set-output name=target_commitish::$target_commitish"
-        echo "::set-output name=name::$name"
-        echo "::set-output name=body::$body_packed_in_json"
-        echo "::set-output name=draft::$draft"
-        echo "::set-output name=prerelease::$prerelease"
-        echo "::set-output name=created_at::$created_at"
-        echo "::set-output name=published_at::$published_at"
-        echo "::set-output name=author_json::$author_packed_in_json"
-        echo "::set-output name=assets_array_json::$assets_packed_in_json"
-
+        echo "url=$url" >> $GITHUB_OUTPUT
+        echo "html_url=$html_url" >> $GITHUB_OUTPUT
+        echo "assets_url=$assets_url" >> $GITHUB_OUTPUT
+        echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
+        echo "tarball_url=$tarball_url" >> $GITHUB_OUTPUT
+        echo "zipball_url=$zipball_url" >> $GITHUB_OUTPUT
+        echo "discussion_url=$discussion_url" >> $GITHUB_OUTPUT
+        echo "id=$id" >> $GITHUB_OUTPUT
+        echo "node_id=$node_id" >> $GITHUB_OUTPUT
+        echo "tag_name=$tag_name" >> $GITHUB_OUTPUT
+        echo "target_commitish=$target_commitish" >> $GITHUB_OUTPUT
+        echo "name=$name" >> $GITHUB_OUTPUT
+        echo "body=$body_packed_in_json" >> $GITHUB_OUTPUT
+        echo "draft=$draft" >> $GITHUB_OUTPUT
+        echo "prerelease=$prerelease" >> $GITHUB_OUTPUT
+        echo "created_at=$created_at" >> $GITHUB_OUTPUT
+        echo "published_at=$published_at" >> $GITHUB_OUTPUT
+        echo "author_json=$author_packed_in_json" >> $GITHUB_OUTPUT
+        echo "assets_array_json=$assets_packed_in_json" >> $GITHUB_OUTPUT
+        
         echo "::endgroup::"
 
     - name: Write markdown body file
