@@ -253,7 +253,7 @@ runs:
 
         
 
-        jq -c '.[]' <<< ${{ toJSON(steps.release_data.outputs.assets_array_json) }} | while read i; do
+        jq -c '.[]' <<< "${{ toJSON(steps.release_data.outputs.assets_array_json) }}" | while read i; do
           asset_name=$(jq -r '.name' <<<"$i")
           asset_id=$(jq -r '.id' <<<"$i")
           should_download=false
