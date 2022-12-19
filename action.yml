@@ -259,7 +259,7 @@ runs:
         fi
 
         echo "::add-mask::$log_token_toggle"
-        #echo "::stop-commands::$log_token_toggle"
+        echo "::stop-commands::$log_token_toggle"
         
         token=${{ inputs.token }}
         echo "::add-mask::$token"
@@ -297,7 +297,7 @@ runs:
               "${download_url}"
           fi
         done
-        #echo "::$log_token_toggle::"
+        echo "::$log_token_toggle::"
 
         echo "::endgroup::"
 
