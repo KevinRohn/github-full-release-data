@@ -56,10 +56,11 @@ inputs:
 
   asset-output:
     required: false
+    default: "./"
     description: >
       (Optional) The output path in which the downloaded asset files should be placed.
 
-      The input value is required if the input value `asset-file` was specified.
+      If no input is set, the workspace path is used.
 
 outputs:
   url:
@@ -131,13 +132,11 @@ outputs:
 
 runs:
   using: "composite"
-  steps:
+  steps:       
     - name: Get release data
       id: release_data
       shell: bash
       run: |
-        echo "get release data"
-
         echo "::group::Fetch data"
 
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
@@ -201,7 +200,7 @@ runs:
         echo "published_at=$published_at" >> $GITHUB_OUTPUT
         echo "author_json=$author_packed_in_json" >> $GITHUB_OUTPUT
         echo "assets_array_json=$assets_packed_in_json" >> $GITHUB_OUTPUT
-        
+
         echo "::endgroup::"
 
     - name: Write markdown body file
@@ -209,8 +208,7 @@ runs:
       shell: bash
       if: ${{ inputs.body-markdown-file-path  != '' }}
       run: |
-        echo "write markdown body file"
-        echo "::group::Create markdown file"
+        echo "::group::Create release markdown file"
 
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
         echo "::add-mask::$log_token_toggle"
@@ -222,20 +220,16 @@ runs:
         echo "::$log_token_toggle::"
         
         echo "::notice title=Release Markdown file of ${{ inputs.repository }}::Saved body content to file '${{ inputs.body-markdown-file-path }}'"
-
-
         echo "::endgroup::"
     
     - name: Download release assets
       id: release_asset_download
-      if: ${{ inputs.assets_array_json  != '' }}
+      if: ${{ inputs.asset-file  != '' }}
       shell: bash
       run: |
-        echo "Download release assets"
-        echo "::group::Create markdown file"
-
+        echo "::group::Download release artifacts"
         if [[ ! -d "${{ inputs.asset-output }}" ]]; then
-          echo "::error title=Asset output path does`nt exist.::No ouput path definied."
+          echo "::error title=Asset output path does not exist.::No ouput path definied."
           exit 1
         fi
 
@@ -249,27 +243,23 @@ runs:
 
         base_asset_url="https://api.github.com/repos/${{ inputs.repository }}/releases/assets/"
 
-        search_string=${{ inputs.assets_array_json }}
-        search_arr=(${search_string//,/ })
-        
+        search_strings="${{ inputs.asset-file }}"
+        IFS=',' read -ra array_search_string <<< "$search_strings"
+        regex_search=""
+        for search_string in "${array_search_string[@]}"; do
+          regex_search="$regex_search|$search_string"
+        done
+        regex_search=${regex_search:1}
 
-        jq -c '.[]' ${{ steps.release_data.outputs.body }} | while read i; do
+        found_at_least_one_matching_file=false
+        jq -c '.[]' <<< '${{ fromJSON(steps.release_data.outputs.assets_array_json) }}' | while read i; do
           asset_name=$(jq -r '.name' <<<"$i")
           asset_id=$(jq -r '.id' <<<"$i")
           should_download=false
-          for match_string in "${search_arr[@]}"; do
-            if [[ "$match_string" = *"*"* ]]; then # wildcard matching
-              if [[ "$asset_name" = *"${match_string//\*/}"* ]]; then # remove wildcard in search string and check matching string
-                echo $asset_name
-                should_download=true
-              fi
-            else
-              if [[ "$asset_name" = "$match_string" ]]; then
-                echo $asset_name
-                should_download=true
-              fi
-            fi
-          done
+          if [[ $(echo "$asset_name" | grep -E -o "$regex_search") != "" ]]; then
+            should_download=true
+            found_at_least_one_matching_file=true
+          fi
           if [[ "$should_download" == true ]]; then
             download_url=${base_asset_url}${asset_id}
             curl \
@@ -280,15 +270,17 @@ runs:
               "${download_url}"
           fi
         done
-
         echo "::$log_token_toggle::"
+
+        if [[ "$found_at_least_one_matching_file" == false ]]; then
+          echo "::warning title=No matching download asset file::No asset file matching one of these patterns was found `${{ inputs.asset-file }}`."
+        fi
 
         echo "::endgroup::"
 
     - name: show output values
       shell: bash
       run: |
-        echo "show output values"
         echo "::group::output values"
 
         echo "INFO: Release url ${{ steps.release_data.outputs.url }}"
