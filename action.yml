@@ -200,7 +200,6 @@ runs:
         echo "published_at=$published_at" >> $GITHUB_OUTPUT
         echo "author_json=$author_packed_in_json" >> $GITHUB_OUTPUT
         echo "assets_array_json=$assets_packed_in_json" >> $GITHUB_OUTPUT
-        echo "assets_array=$assets" >> $GITHUB_OUTPUT
 
         echo "::endgroup::"
 
@@ -252,23 +251,27 @@ runs:
         done
         regex_search=${regex_search:1}
 
-        jq -c '.[]' <<< ${{ fromJSON(steps.release_data.outputs.assets_array) }} | while read i; do
-          asset_name=$(jq -r '.name' <<<"$i")
-          asset_id=$(jq -r '.id' <<<"$i")
-          should_download=false
-          if [[ $(echo "$asset_name" | grep -E -o "$regex_search") != "" ]]; then
-            should_download=true
-          fi
-          if [[ "$should_download" == true ]]; then
-            download_url=${base_asset_url}${asset_id}
-            curl \
-              -L \
-              -H "${auth_header}" \
-              -H "Accept:application/octet-stream" \
-              -o "${{ inputs.asset-output }}/${asset_name}" \
-              "${download_url}"
-          fi
-        done
+        ${{ toJSON(steps.release_data.outputs.assets_array_json) }} > tmp.json
+
+        cat tmp.json
+
+        #jq -c '.[]' <<< ${{ fromJSON(steps.release_data.outputs.assets_array_json) }} | while read i; do
+        #  asset_name=$(jq -r '.name' <<<"$i")
+        #  asset_id=$(jq -r '.id' <<<"$i")
+        #  should_download=false
+        #  if [[ $(echo "$asset_name" | grep -E -o "$regex_search") != "" ]]; then
+        #    should_download=true
+        #  fi
+        #  if [[ "$should_download" == true ]]; then
+        #    download_url=${base_asset_url}${asset_id}
+        #    curl \
+        #      -L \
+        #      -H "${auth_header}" \
+        #      -H "Accept:application/octet-stream" \
+        #      -o "${{ inputs.asset-output }}/${asset_name}" \
+        #      "${download_url}"
+        #  fi
+        #done
 
         #echo "::$log_token_toggle::"
 
