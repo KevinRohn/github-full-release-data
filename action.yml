@@ -228,8 +228,6 @@ runs:
       shell: bash
       run: |
         echo "::group::Download release artifacts"
-
-
         if [[ ! -d "${{ inputs.asset-output }}" ]]; then
           echo "::error title=Asset output path does not exist.::No ouput path definied."
           exit 1
@@ -256,7 +254,7 @@ runs:
 
         
 
-        jq -c '.[]' <<< ${{ steps.release_data.outputs.assets_array_json }} | while read i; do
+        jq -c '.[]' <<< $(echo ${{ steps.release_data.outputs.assets_array_json }}) | while read i; do
           asset_name=$(jq -r '.name' <<<"$i")
           asset_id=$(jq -r '.id' <<<"$i")
           should_download=false
