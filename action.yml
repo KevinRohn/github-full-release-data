@@ -139,7 +139,15 @@ runs:
       run: |
         echo "::group::Fetch data"
 
-        log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        log_token_toggle=""
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          log_token_toggle=$(echo -n ${{ inputs.token }} | shasum -a 256 | head -c 64)
+        else
+          exit 1;
+        fi
+
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
 
@@ -210,7 +218,15 @@ runs:
       run: |
         echo "::group::Create release markdown file"
 
-        log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        log_token_toggle=""
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          log_token_toggle=$(echo -n ${{ inputs.token }} | shasum -a 256 | head -c 64)
+        else
+          exit 1;
+        fi
+
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
 
@@ -233,9 +249,17 @@ runs:
           exit 1
         fi
 
-        log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        log_token_toggle=""
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          log_token_toggle=$(echo -n ${{ inputs.token }} | shasum -a 256 | head -c 64)
+        else
+          exit 1;
+        fi
+
         echo "::add-mask::$log_token_toggle"
-        echo "::stop-commands::$log_token_toggle"
+        #echo "::stop-commands::$log_token_toggle"
         
         token=${{ inputs.token }}
         echo "::add-mask::$token"
@@ -244,6 +268,11 @@ runs:
         base_asset_url="https://api.github.com/repos/${{ inputs.repository }}/releases/assets/"
 
         search_strings="${{ inputs.asset-file }}"
+
+        if [[ "$RUNNER_OS" == "macOS" ]]; then # remove wildcard character from search string on non-GNU grep search
+          search_strings=$(sed 's/*//g' <<< "$search_strings") 
+        fi
+
         IFS=',' read -ra array_search_string <<< "$search_strings"
         regex_search=""
         for search_string in "${array_search_string[@]}"; do
@@ -251,14 +280,12 @@ runs:
         done
         regex_search=${regex_search:1}
 
-        found_at_least_one_matching_file=false
         jq -c '.[]' <<< '${{ fromJSON(steps.release_data.outputs.assets_array_json) }}' | while read i; do
           asset_name=$(jq -r '.name' <<<"$i")
           asset_id=$(jq -r '.id' <<<"$i")
           should_download=false
           if [[ $(echo "$asset_name" | grep -E -o "$regex_search") != "" ]]; then
             should_download=true
-            found_at_least_one_matching_file=true
           fi
           if [[ "$should_download" == true ]]; then
             download_url=${base_asset_url}${asset_id}
@@ -270,11 +297,7 @@ runs:
               "${download_url}"
           fi
         done
-        echo "::$log_token_toggle::"
-
-        if [[ "$found_at_least_one_matching_file" == false ]]; then
-          echo "::warning title=No matching download asset file::No asset file matching one of these patterns was found `${{ inputs.asset-file }}`."
-        fi
+        #echo "::$log_token_toggle::"
 
         echo "::endgroup::"
 
