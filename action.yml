@@ -251,30 +251,25 @@ runs:
         done
         regex_search=${regex_search:1}
 
-        {
-          echo '${{ steps.release_data.outputs.assets_array_json }}'
-        } >> tmp.json
-        content=$(cat tmp.json)
-        json_content=$(printf '%s' "$content" | jq --raw-input --slurp '.')
+        echo "${{ fromJSON(steps.release_data.outputs.assets_array_json) }}[0].url"
 
-
-        jq -c '.[]' <<< "${{ fromJSON($json_content) }}" | while read i; do
-          asset_name=$(jq -r '.name' <<<"$i")
-          asset_id=$(jq -r '.id' <<<"$i")
-          should_download=false
-          if [[ $(echo "$asset_name" | grep -E -o "$regex_search") != "" ]]; then
-            should_download=true
-          fi
-          if [[ "$should_download" == true ]]; then
-            download_url=${base_asset_url}${asset_id}
-            curl \
-              -L \
-              -H "${auth_header}" \
-              -H "Accept:application/octet-stream" \
-              -o "${{ inputs.asset-output }}/${asset_name}" \
-              "${download_url}"
-          fi
-        done
+        #jq -c '.[]' <<< ${{ fromJSON($json_content) }} | while read i; do
+        #  asset_name=$(jq -r '.name' <<<"$i")
+        #  asset_id=$(jq -r '.id' <<<"$i")
+        #  should_download=false
+        #  if [[ $(echo "$asset_name" | grep -E -o "$regex_search") != "" ]]; then
+        #    should_download=true
+        #  fi
+        #  if [[ "$should_download" == true ]]; then
+        #    download_url=${base_asset_url}${asset_id}
+        #    curl \
+        #      -L \
+        #      -H "${auth_header}" \
+        #      -H "Accept:application/octet-stream" \
+        #      -o "${{ inputs.asset-output }}/${asset_name}" \
+        #      "${download_url}"
+        #  fi
+        #done
 
         #echo "::$log_token_toggle::"
 
