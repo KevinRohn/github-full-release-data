@@ -253,7 +253,6 @@ runs:
         if [[ "$RUNNER_OS" == "Linux" ]]; then
           log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
         elif [[ "$RUNNER_OS" == "macOS" ]]; then
-          echo "noToken"
           log_token_toggle=$(echo -n ${{ inputs.token }} | shasum -a 256 | head -c 64)
         else
           exit 1;
@@ -269,6 +268,11 @@ runs:
         base_asset_url="https://api.github.com/repos/${{ inputs.repository }}/releases/assets/"
 
         search_strings="${{ inputs.asset-file }}"
+
+        if [[ "$RUNNER_OS" == "macOS" ]]; then # remove wildcard character from search string on non-GNU grep search
+          search_strings=$(sed 's/*//g' <<< "$search_strings") 
+        fi
+
         IFS=',' read -ra array_search_string <<< "$search_strings"
         regex_search=""
         for search_string in "${array_search_string[@]}"; do
