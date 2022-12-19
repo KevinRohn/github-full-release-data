@@ -254,7 +254,7 @@ runs:
         {
           echo '${{ steps.release_data.outputs.assets_array_json }}'
         } >> tmp.json
-        content=$(cat ${{ tmp.json }})
+        content=$(cat tmp.json)
         json_content=$(printf '%s' "$content" | jq --raw-input --slurp '.')
 
         jq -c '.[]' <<< "$json_content" | while read i; do
