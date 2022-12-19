@@ -59,7 +59,7 @@ inputs:
     description: >
       (Optional) The output path in which the downloaded asset files should be placed.
 
-      The input value is required if the input value `asset-file` was specified.
+      If no input is set, the workspace path is used.
 
 outputs:
   url:
@@ -219,20 +219,22 @@ runs:
         echo "::$log_token_toggle::"
         
         echo "::notice title=Release Markdown file of ${{ inputs.repository }}::Saved body content to file '${{ inputs.body-markdown-file-path }}'"
-
-
         echo "::endgroup::"
     
     - name: Download release assets
       id: release_asset_download
-      if: ${{ inputs.assets_array_json  != '' }}
+      if: ${{ inputs.asset-file  != '' }}
       shell: bash
       run: |
         echo "::group::Download release artifacts"
 
-        if [[ ! -d "${{ inputs.asset-output }}" ]]; then
-          echo "::error title=Asset output path does`nt exist.::No ouput path definied."
-          exit 1
+        asset_output_path="./"
+
+        if [[ ${{ inputs.asset-output }} != '' ]]; then
+          if [[ ! -d "${{ inputs.asset-output }}" ]]; then
+            echo "::error title=Asset output path does`nt exist.::No ouput path definied."
+            exit 1
+          fi
         fi
 
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
