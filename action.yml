@@ -139,7 +139,15 @@ runs:
       run: |
         echo "::group::Fetch data"
 
-        log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        log_token_toggle=""
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          log_token_toggle=$(echo -n ${{ inputs.token }} | shasum -a 256 | head -c 64)
+        else
+          exit 1;
+        fi
+
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
 
@@ -210,7 +218,15 @@ runs:
       run: |
         echo "::group::Create release markdown file"
 
-        log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        log_token_toggle=""
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          log_token_toggle=$(echo -n ${{ inputs.token }} | shasum -a 256 | head -c 64)
+        else
+          exit 1;
+        fi
+
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
 
@@ -233,7 +249,15 @@ runs:
           exit 1
         fi
 
-        log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        log_token_toggle=""
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          log_token_toggle=$(echo -n ${{ inputs.token }} | shasum -a 256 | head -c 64)
+        else
+          exit 1;
+        fi
+        
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
         
