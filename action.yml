@@ -251,8 +251,9 @@ runs:
         done
         regex_search=${regex_search:1}
 
-        echo "${{ fromJSON(steps.release_data.outputs.assets_array_json) }}" > tmp.json
-        
+        echo "${{ steps.release_data.outputs.assets_array_json }}" > tmp.json
+
+        cat tmp.json  
 
         jq -c '.[]' tmp.json | while read i; do
           asset_name=$(jq -r '.name' <<<"$i")
