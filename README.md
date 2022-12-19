@@ -173,4 +173,11 @@ The action supports the following inputs:
 | `author_json`       | The `author_json` output from release. It's a multiline output, which is packed in a JSON object. <br/> The output can be used with the `fromJSON` function `(steps.<id>.outputs.assets_array_json)`.       |
 
 ## Support
-This action only supports Linux runners. If you encounter Error: action is only supported on Linux then you are using non-linux runner.
+
+### Supported runners for  [v2](https://github.com/KevinRohn/github-full-release-data/releases/tag/v2)
+
+| OS | supported? |
+| - | - |
+| `Linux OS runner` | :white_check_mark: |
+| `macOS runner` | :x: |
+| `windows OS runner` | :x| 
