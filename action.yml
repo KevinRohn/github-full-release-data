@@ -246,34 +246,30 @@ runs:
 
         base_asset_url="https://api.github.com/repos/${{ inputs.repository }}/releases/assets/"
 
-        #search_string=${{ inputs.assets_array_json }}
-        #search_arr=(${search_string//,/ })
+        search_strings="${{ inputs.asset-file }}"
+        IFS=',' read -ra array_search_string <<< "$search_strings"
+        regex_search=""
+        for search_string in "${array_search_string[@]}"; do
+          regex_search="$regex_search|$search_string"
+        done
+        regex_search=${regex_search:1}
+
         
 
-        jq -c '.[]' ${{ steps.release_data.outputs.assets_array_json }} | while read i; do
+        jq -c '.[]' <<< ${{ steps.release_data.outputs.assets_array_json }} | while read i; do
           asset_name=$(jq -r '.name' <<<"$i")
           asset_id=$(jq -r '.id' <<<"$i")
           should_download=false
-          for match_string in "${search_arr[@]}"; do
-            if [[ "$match_string" = *"*"* ]]; then # wildcard matching
-              if [[ "$asset_name" = *"${match_string//\*/}"* ]]; then # remove wildcard in search string and check matching string
-                echo $asset_name
-                should_download=true
-              fi
-            else
-              if [[ "$asset_name" = "$match_string" ]]; then
-                echo $asset_name
-                should_download=true
-              fi
-            fi
-          done
+          if [[ $(echo "$asset_name" | grep -E -o "$regex_search") != "" ]]; then
+            should_download=true
+          fi
           if [[ "$should_download" == true ]]; then
             download_url=${base_asset_url}${asset_id}
             curl \
               -L \
               -H "${auth_header}" \
               -H "Accept:application/octet-stream" \
-              -o "${asset_output_path}/${asset_name}" \
+              -o "${{ inputs.asset-output }}/${asset_name}" \
               "${download_url}"
           fi
         done
