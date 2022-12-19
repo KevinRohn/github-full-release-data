@@ -56,6 +56,7 @@ inputs:
 
   asset-output:
     required: false
+    default: "./"
     description: >
       (Optional) The output path in which the downloaded asset files should be placed.
 
@@ -228,16 +229,12 @@ runs:
       run: |
         echo "::group::Download release artifacts"
 
-        asset_output_path="./"
 
-        if [[ ${{ inputs.asset-output }} != '' ]]; then
-          if [[ ! -d "${{ inputs.asset-output }}" ]]; then
-            echo "::error title=Asset output path does not exist.::No ouput path definied."
-            exit 1
-          else
-            asset_output_path=${{ inputs.asset-output }}
-          fi
+        if [[ ! -d "${{ inputs.asset-output }}" ]]; then
+          echo "::error title=Asset output path does not exist.::No ouput path definied."
+          exit 1
         fi
+
 
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
         #echo "::add-mask::$log_token_toggle"
