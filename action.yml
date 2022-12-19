@@ -254,23 +254,23 @@ runs:
 
         
 
-        jq -c '.[]' <<< $(echo ${{ steps.release_data.outputs.assets_array_json }}) | while read i; do
-          asset_name=$(jq -r '.name' <<<"$i")
-          asset_id=$(jq -r '.id' <<<"$i")
-          should_download=false
-          if [[ $(echo "$asset_name" | grep -E -o "$regex_search") != "" ]]; then
-            should_download=true
-          fi
-          if [[ "$should_download" == true ]]; then
-            download_url=${base_asset_url}${asset_id}
-            curl \
-              -L \
-              -H "${auth_header}" \
-              -H "Accept:application/octet-stream" \
-              -o "${{ inputs.asset-output }}/${asset_name}" \
-              "${download_url}"
-          fi
-        done
+        #jq -c '.[]' <<< $(echo ${{ steps.release_data.outputs.assets_array_json }}) | while read i; do
+        #  asset_name=$(jq -r '.name' <<<"$i")
+        #  asset_id=$(jq -r '.id' <<<"$i")
+        #  should_download=false
+        #  if [[ $(echo "$asset_name" | grep -E -o "$regex_search") != "" ]]; then
+        #    should_download=true
+        #  fi
+        #  if [[ "$should_download" == true ]]; then
+        #    download_url=${base_asset_url}${asset_id}
+        #    curl \
+        #      -L \
+        #      -H "${auth_header}" \
+        #      -H "Accept:application/octet-stream" \
+        #      -o "${{ inputs.asset-output }}/${asset_name}" \
+        #      "${download_url}"
+        #  fi
+        #done
 
         #echo "::$log_token_toggle::"
 
