@@ -251,7 +251,9 @@ runs:
         done
         regex_search=${regex_search:1}
 
-        echo "${{ steps.release_data.outputs.assets_array_json }}" > tmp.json
+        {
+          echo '${{ steps.release_data.outputs.assets_array_json }}'
+        } >> tmp.json
 
         cat tmp.json  
 
