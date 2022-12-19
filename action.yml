@@ -233,8 +233,6 @@ runs:
           exit 1
         fi
 
-        jq
-
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
         #echo "::add-mask::$log_token_toggle"
         #echo "::stop-commands::$log_token_toggle"
@@ -255,7 +253,7 @@ runs:
 
         
 
-        jq -c '.[]' <<< $(echo ${{ fromJSON(steps.release_data.outputs.assets_array_json) }}) | while read i; do
+        jq -c '.[]' <<< $(echo ${{ toJSON(steps.release_data.outputs.assets_array_json) }}) | while read i; do
           asset_name=$(jq -r '.name' <<<"$i")
           asset_id=$(jq -r '.id' <<<"$i")
           should_download=false
