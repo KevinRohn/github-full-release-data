@@ -234,6 +234,8 @@ runs:
           if [[ ! -d "${{ inputs.asset-output }}" ]]; then
             echo "::error title=Asset output path does not exist.::No ouput path definied."
             exit 1
+          else
+            asset_output_path=${{ inputs.asset-output }}
           fi
         fi
 
