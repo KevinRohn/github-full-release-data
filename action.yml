@@ -136,8 +136,6 @@ runs:
       id: release_data
       shell: bash
       run: |
-        echo "get release data"
-
         echo "::group::Fetch data"
 
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
@@ -201,7 +199,7 @@ runs:
         echo "published_at=$published_at" >> $GITHUB_OUTPUT
         echo "author_json=$author_packed_in_json" >> $GITHUB_OUTPUT
         echo "assets_array_json=$assets_packed_in_json" >> $GITHUB_OUTPUT
-        
+
         echo "::endgroup::"
 
     - name: Write markdown body file
@@ -209,8 +207,7 @@ runs:
       shell: bash
       if: ${{ inputs.body-markdown-file-path  != '' }}
       run: |
-        echo "write markdown body file"
-        echo "::group::Create markdown file"
+        echo "::group::Create release markdown file"
 
         log_token_toggle=$(echo -n ${{ inputs.token }} | sha256sum | head -c 64)
         echo "::add-mask::$log_token_toggle"
@@ -231,8 +228,7 @@ runs:
       if: ${{ inputs.assets_array_json  != '' }}
       shell: bash
       run: |
-        echo "Download release assets"
-        echo "::group::Create markdown file"
+        echo "::group::Download release artifacts"
 
         if [[ ! -d "${{ inputs.asset-output }}" ]]; then
           echo "::error title=Asset output path does`nt exist.::No ouput path definied."
@@ -288,7 +284,6 @@ runs:
     - name: show output values
       shell: bash
       run: |
-        echo "show output values"
         echo "::group::output values"
 
         echo "INFO: Release url ${{ steps.release_data.outputs.url }}"
