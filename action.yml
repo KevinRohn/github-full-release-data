@@ -246,11 +246,11 @@ runs:
 
         base_asset_url="https://api.github.com/repos/${{ inputs.repository }}/releases/assets/"
 
-        search_string=${{ inputs.assets_array_json }}
-        search_arr=(${search_string//,/ })
+        #search_string=${{ inputs.assets_array_json }}
+        #search_arr=(${search_string//,/ })
         
 
-        jq -c '.[]' ${{ steps.release_data.outputs.body }} | while read i; do
+        jq -c '.[]' ${{ steps.release_data.outputs.assets_array_json }} | while read i; do
           asset_name=$(jq -r '.name' <<<"$i")
           asset_id=$(jq -r '.id' <<<"$i")
           should_download=false
