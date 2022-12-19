@@ -175,7 +175,7 @@ runs:
         author=$(jq -r '.author' <<< "$release_json_data")
         author_packed_in_json=$(printf '%s' "$author" | jq --raw-input --slurp '.')   
         assets=$(jq -r '.assets' <<< "$release_json_data")
-        assets_packed_in_json=$(printf '%s' "$assets" | jq --raw-input --slurp '.')
+        assets_packed_in_json=$(printf '%s\t%s\t%s\n' "$assets" | jq --raw-input --slurp '.')
 
         echo "::$log_token_toggle::"
 
