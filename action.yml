@@ -251,7 +251,7 @@ runs:
         done
         regex_search=${regex_search:1}
 
-        jq -c '.[]' <<< ${{ fromJSON(steps.release_data.outputs.assets_array_json) }} | while read i; do
+        jq -c '.[]' <<< '${{ fromJSON(steps.release_data.outputs.assets_array_json) }}' | while read i; do
           asset_name=$(jq -r '.name' <<<"$i")
           asset_id=$(jq -r '.id' <<<"$i")
           should_download=false
