@@ -179,5 +179,5 @@ The action supports the following inputs:
 | OS | supported? |
 | - | - |
 | `Linux OS runner` | :white_check_mark: |
-| `macOS runner` | :x: |
+| `macOS runner` | :white_check_mark: |
 | `windows OS runner` | :x: | 
