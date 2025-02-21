@@ -170,7 +170,7 @@ The action supports the following inputs:
 | `created_at`        | Shows the release creation date                                                                                                                                                                             |
 | `published_at`      | Shows the published date of the release                                                                                                                                                                     |
 | `assets_array_json` | The `assets_array_json` output from release. It's a multiline output, which is packed in a JSON object. <br/> The output can be used with the `fromJSON` function `(steps.<id>.outputs.assets_array_json)`. |
-| `author_json`       | The `author_json` output from release. It's a multiline output, which is packed in a JSON object. <br/> The output can be used with the `fromJSON` function `(steps.<id>.outputs.assets_array_json)`.       |
+| `author_json`       | The `author_json` output from release. It's a multiline output, which is packed in a JSON object. <br/> The output can be used with the `fromJSON` function `(steps.<id>.outputs.author_json)`.       |
 
 ## Support
 
