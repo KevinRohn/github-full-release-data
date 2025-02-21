@@ -127,7 +127,7 @@ outputs:
   author_json:
     description: >
       The `author_json` output from release. It's a multiline output, which is packed in a JSON object.
-      The output can be used with the `fromJSON` function `(steps.<id>.outputs.assets_array_json)`.
+      The output can be used with the `fromJSON` function `(steps.<id>.outputs.author_json)`.
     value: ${{ steps.release_data.outputs.author_json }}
 
 runs:
@@ -136,7 +136,7 @@ runs:
     - name: Get release data
       id: release_data
       shell: bash
-      run: |
+      run: | # shell
         echo "::group::Fetch data"
 
         log_token_toggle=""
@@ -215,7 +215,7 @@ runs:
       id: markdown_body
       shell: bash
       if: ${{ inputs.body-markdown-file-path  != '' }}
-      run: |
+      run: | # shell
         echo "::group::Create release markdown file"
 
         log_token_toggle=""
@@ -242,7 +242,7 @@ runs:
       id: release_asset_download
       if: ${{ inputs.asset-file  != '' }}
       shell: bash
-      run: |
+      run: | # shell
         echo "::group::Download release artifacts"
         if [[ ! -d "${{ inputs.asset-output }}" ]]; then
           echo "::error title=Asset output path does not exist.::No ouput path definied."
@@ -303,7 +303,7 @@ runs:
 
     - name: show output values
       shell: bash
-      run: |
+      run: | # shell
         echo "::group::output values"
 
         echo "INFO: Release url ${{ steps.release_data.outputs.url }}"
