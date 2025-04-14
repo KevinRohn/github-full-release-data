@@ -213,6 +213,8 @@ runs:
 
     - name: Write markdown body file
       id: markdown_body
+      env:
+        BODY_JSON: ${{ steps.release_data.outputs.body }}
       shell: bash
       if: ${{ inputs.body-markdown-file-path  != '' }}
       run: | # shell
@@ -229,10 +231,9 @@ runs:
 
         echo "::add-mask::$log_token_toggle"
         echo "::stop-commands::$log_token_toggle"
+        
+        printf '%s' "$BODY_JSON" | jq -r . > "${{ inputs.body-markdown-file-path }}"
 
-        {
-          echo '${{ fromJSON(steps.release_data.outputs.body) }}'
-        } >> ${{ inputs.body-markdown-file-path }}
         echo "::$log_token_toggle::"
         
         echo "::notice title=Release Markdown file of ${{ inputs.repository }}::Saved body content to file '${{ inputs.body-markdown-file-path }}'"
